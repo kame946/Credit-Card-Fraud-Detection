@@ -13,6 +13,32 @@ The pipeline consists of the following components:
    - **Dataflow**: As the runner for the Apache Beam pipeline.
    - **BigQuery**: For storing processed transaction data.
 
+### GCP Architecture Diagram
+
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│   Data Producer │────▶│  Pub/Sub Topic  │────▶│  Dataflow Job   │────▶│  BigQuery       │
+│   (producer.py) │     │                 │     │ (Apache Beam)   │     │  Tables         │
+└─────────────────┘     └─────────────────┘     └─────────────────┘     └─────────────────┘
+                                                            │
+                                                            ▼
+                                               ┌─────────────────┐
+                                               │ Fraud Detection │
+                                               │   Logic         │
+                                               └─────────────────┘
+                                                            │
+                                               ┌─────────────────┐
+                                               │   Normal TX     │
+                                               │   Fraud Alerts  │
+                                               └─────────────────┘
+```
+
+**Flow Description:**
+- **Data Producer**: Runs locally or on a VM, generates transaction data.
+- **Pub/Sub**: Acts as the message buffer for real-time streaming.
+- **Dataflow**: Executes the Apache Beam pipeline, scales automatically.
+- **BigQuery**: Stores processed data in tables for analytics and reporting.
+
 ## Data Flow
 
 1. The producer generates fake transaction records with fields like transaction ID, card ID, merchant, amount, location, and timestamp.
